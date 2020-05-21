@@ -1,5 +1,7 @@
 library flutter_cache;
+
 import 'dart:convert';
+import 'package:flutter_cache/ShouldCache.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Cache {
@@ -47,6 +49,15 @@ class Cache {
     /* @type List<Map> */
     if (data is List<Map>) {
       List<String> list = data.map((i) => json.encode(i)).toList();
+      prefs.setStringList(key, list);
+    }
+
+    /* @type List<Map> */
+    if (data is ShouldCache) prefs.setString(key, json.encode(data.toMap()));
+
+    /* @type List<ShouldCache> */
+    if (data is List<ShouldCache>) {
+      List<String> list = data.map((i) => json.encode(i.toMap())).toList();
       prefs.setStringList(key, list);
     }
 
