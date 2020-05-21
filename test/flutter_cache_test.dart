@@ -30,6 +30,32 @@ void main() {
     expect(json.decode(pref.getString('key')), data);
   });
 
+  test('Can Cache by List', () async {
+    /* Begin Setup Test */
+    SharedPreferences.setMockInitialValues({});
+    List<String> listString = [
+      'Ashraf',
+      'Kamarudin'
+    ];
+    List<Map> listMap = [
+      {
+        'name': 'Ashraf'
+      },
+      {
+        'name': 'Kamarudin'
+      }
+    ];
+    await Cache.remember(listString, 'string');
+    await Cache.remember(listMap, 'map');
+    /* End Setup Test */
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    List<String> cachedListMapInString = pref.getStringList('map');
+    List cachedListMapInMap = cachedListMapInString.map((i)=> json.decode(i)).toList();
+
+    expect(pref.getStringList('string'), listString);
+    expect(cachedListMapInMap, listMap);
+  });
+
   test('Can Load by String', () async {
     /* Begin Setup Test */
     SharedPreferences.setMockInitialValues({});
@@ -53,6 +79,34 @@ void main() {
 
     /* Test */
     expect(await Cache.load('key'), data);
+  });
+
+  test('Can Load by List', () async {
+    /* Begin Setup Test */
+    SharedPreferences.setMockInitialValues({});
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    List<String> listString = [
+      'Ashraf',
+      'Kamarudin'
+    ];
+    List<Map> listMap = [
+      {
+        'name': 'Ashraf'
+      },
+      {
+        'name': 'Kamarudin'
+      }
+    ];
+    await Cache.remember(listString, 'string');
+    await Cache.remember(listMap, 'map');
+    /* End Setup Test */
+
+    List<String> cachedListMapInString = await Cache.load('map', true);
+    List cachedListMapInMap = cachedListMapInString.map((i)=> json.decode(i)).toList();
+
+    /* Test */
+    expect(await Cache.load('string', true), listString);
+    expect(cachedListMapInMap, listMap);
   });
 
    test('Will Retrieve Cache instead of Caching if Cache Exist', () async {

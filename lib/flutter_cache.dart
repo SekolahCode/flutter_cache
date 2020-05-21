@@ -27,8 +27,12 @@ class Cache {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     if (data is Map) prefs.setString(key, json.encode(data));
-    if (data is List) {
-      List<String> list = data.map((i) => json.encode(i.toMap())).toList();
+    if (data is List<String>) {
+      List<String> list = data.map((i) => i.toString()).toList();
+      prefs.setStringList(key, list);
+    }
+    if (data is List<Map>) {
+      List<String> list = data.map((i) => json.encode(i)).toList();
       prefs.setStringList(key, list);
     }
     if (data is String) prefs.setString(key, data);
