@@ -24,12 +24,10 @@ class Cache {
   }
 
   static Future<void> overwrite (var data, String key, [int expiredAt]) async {
-
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     if (data is Map) prefs.setString(key, json.encode(data));
     if (data is List) {
-      print('save list');
       List<String> list = data.map((i) => json.encode(i.toMap())).toList();
       prefs.setStringList(key, list);
     }
@@ -52,12 +50,14 @@ class Cache {
     }
 
     if (list) {
-      print('list');
-      print(prefs.getStringList(key));
       return prefs.getStringList(key);
     }
 
-    return json.decode(prefs.getString(key));
+    try {
+      return json.decode(prefs.getString(key));
+    } catch (e) {
+      return prefs.getString(key);
+    }
   }
 
   static Future clear () async {
