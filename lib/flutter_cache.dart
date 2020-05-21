@@ -4,17 +4,20 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Cache {
 
+  /*
+  * This function will return cached data if exist, null if created
+  */
   static Future remember (var data, String key, [int expiredAt]) async {
     try {
-      var x;
+      var cacheData;
       data is List
-        ? x = await Cache.load(key, true)
-        : x = await Cache.load(key);
+        ? cacheData = await Cache.load(key, true)
+        : cacheData = await Cache.load(key);
 
-        if (x == null) {
-          throw('Null');
+        if (cacheData == null) {
+          throw('No Cache Data'); // throw to create new cache
         } else {
-          return x;
+          return cacheData;
         }
     } catch (e) {
       expiredAt == null 
@@ -23,21 +26,37 @@ class Cache {
     }
   }
 
+  /*
+  * This is where the date is saved in Shared Preference
+  */
   static Future<void> overwrite (var data, String key, [int expiredAt]) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
+    /* @type String */
+    if (data is String) prefs.setString(key, data);
+
+    /* @type Map */
     if (data is Map) prefs.setString(key, json.encode(data));
+
+    /* @type List<String> */
     if (data is List<String>) {
       List<String> list = data.map((i) => i.toString()).toList();
       prefs.setStringList(key, list);
     }
+
+    /* @type List<Map> */
     if (data is List<Map>) {
       List<String> list = data.map((i) => json.encode(i)).toList();
       prefs.setStringList(key, list);
     }
-    if (data is String) prefs.setString(key, data);
 
     if (expiredAt != null) prefs.setString(key + 'ExpiredAt', (Cache._currentTimeInSeconds() + expiredAt).toString());
+
+    if (data is List) { // return list
+      return Cache.load(key, true);
+    }
+
+    return Cache.load(key);
   }
 
   static Future load (String key, [bool list = false]) async {
