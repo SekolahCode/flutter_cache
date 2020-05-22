@@ -95,4 +95,11 @@ void main() {
 
     expect(await Cache.load('willExpire'), null);
   });
+
+  test('It can use anonymous function', () async {
+
+    expect(await Cache.remember('string', () {
+      return 'test';
+    }), 'test');
+  });
 }
