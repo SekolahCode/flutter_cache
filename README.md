@@ -12,7 +12,7 @@ Cache.remember('key', 'data', 120);
 Cache.write('key', 'data', 120); 
 
 // load Cache by key
-Cache.load('key); // This will load the cache data.
+Cache.load('key'); // This will load the cache data.
 
 // destroy single cache by key
 Cache.destroy('key');
