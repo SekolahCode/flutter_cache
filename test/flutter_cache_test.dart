@@ -85,4 +85,14 @@ void main() {
     expect(await Cache.remember(string, 'string'), string);
     expect(await Cache.remember('NewData', 'existing'), 'ExistingData');
   });
+  
+  test('It will remove cache data if passed expiry time', () async {
+    Cache.write('data', 'willExpire', 2);
+
+    expect(await Cache.load('willExpire'), 'data');
+
+    await Future.delayed(const Duration(seconds: 3), (){});
+
+    expect(await Cache.load('willExpire'), null);
+  });
 }
