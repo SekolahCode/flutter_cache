@@ -17,8 +17,7 @@ class Cache {
   String type;
 
   /* Cache Expiry*/
-  String expiredAtKey;
-  int expiredAt;
+  int expiredAfter;
 
   /*
   * Cache Class Constructors Section
@@ -52,8 +51,8 @@ class Cache {
     this.typeKey = typeKey  ?? this._generateCompositeKey('type');
   }
 
-  setExpiredAt () {
-    this.expiredAt = Cache._currentTimeInSeconds();
+  setExpiredAfter (int expiredAfter) {
+    this.expiredAfter = expiredAfter + Cache._currentTimeInSeconds();
   }
 
   /*
@@ -75,10 +74,11 @@ class Cache {
   *
   * @return Cache.content
   */
-  static Future write (var data, String key, [int expiredAt]) async {
+  static Future write (var data, String key, [int expiredAfter]) async {
 
     Cache cache = new Cache(data, key);
-    cache.setExpiredAt();
+    if (expiredAfter != null) cache.setExpiredAfter(expiredAfter);
+
     cache._save(cache);
 
     return Cache.load(key);
@@ -93,7 +93,14 @@ class Cache {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    if (prefs.getString(key) == null) return prefs.getString(key);
+    // Guard
+    if (prefs.getString(key) == null) return null;
+    if (Cache._isExpired(prefs.getInt(key + 'ExpiredAt'))) {
+      Cache.destroy(key + 'ExpiredAt');
+      Cache.destroy(key);
+
+      return null;
+    }
   
     Map keys    = jsonDecode(prefs.getString(key));
     Cache cache = new Cache.rebuild(key);
@@ -106,9 +113,7 @@ class Cache {
       cache.setContent(list, keys['content']);
     }
 
-    // cache.setContent(prefs.getString(keys['content']), keys['content']);
     cache.setType(prefs.getString(keys['type']), keys['type']);
-    cache.setExpiredAt();
 
     return cache.content;
   }
@@ -119,8 +124,8 @@ class Cache {
   * @return void
   */
   void _save (Cache cache) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
+    SharedPreferences prefs = await SharedPreferences.getInstance();    
+    
     Map<String, String> map = {
       'content' : cache.contentKey,
       'type'    : cache.typeKey
@@ -130,6 +135,7 @@ class Cache {
 
     if (cache.content is String) prefs.setString(cache.contentKey, cache.content);
     if (cache.content is List) prefs.setStringList(cache.contentKey, cache.content);
+    if (cache.expiredAfter != null) prefs.setInt(key + 'ExpiredAt', cache.expiredAfter);
 
     prefs.setString(cache.typeKey, cache.type);
   }
@@ -158,6 +164,7 @@ class Cache {
   * Cache Class Helper Function Section
   *
   * This is where all custom functions used by this class reside.
+  * All functions should be private.
   */
   String _generateCompositeKey(String keyType) {
     return keyType + Cache._currentTimeInSeconds().toString() + this.key;
@@ -166,5 +173,13 @@ class Cache {
   static int _currentTimeInSeconds() { // private
     var ms = (new DateTime.now()).millisecondsSinceEpoch;
     return (ms / 1000).round();
+  }
+
+  static bool _isExpired(int cacheExpiryInfo) {
+    if (cacheExpiryInfo != null && cacheExpiryInfo < Cache._currentTimeInSeconds()) {
+      return true;
+    }
+
+    return false;
   }
 }
