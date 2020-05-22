@@ -7,20 +7,48 @@ import 'package:shared_preferences/shared_preferences.dart';
 class Cache {
 
   String key;
+
+  String contentKey;
   String content;
+
+  String typeKey;
   String type;
+
+  String expiredAtKey;
   int expiredAt;
 
-  setContent (var data) {
-    this.content = Parse.cacheContent(data);
+  Cache (data, key) {
+    Map parsedData = Parse.content(data);
+
+    this.key = key;
+    this.setContent(parsedData['content']);
+    this.setType(parsedData['type']);
+  }
+
+  Cache.rebuild (key) {
+    this.key = key;
   }
 
   setKey (String key) {
     this.key = key;
   }
 
+  setContent (var data , [String contentKey]) {
+    this.content = data;
+    this.contentKey = contentKey ?? this._generateCompositeKey('content');
+  }
+
+  setType (String type , [String typeKey]) {
+    this.type = type;
+    this.typeKey = typeKey  ?? this._generateCompositeKey('type');
+  }
+
   setExpiredAt () {
     this.expiredAt = Cache._currentTimeInSeconds();
+  }
+
+  String _generateCompositeKey(String keyType) {
+    return keyType + Cache._currentTimeInSeconds().toString() + this.key;
   }
 
   /*
@@ -50,10 +78,7 @@ class Cache {
   */
   static Future overwrite (var data, String key, [int expiredAt]) async {
 
-    Cache cache = new Cache();
-
-    cache.setKey(key);
-    cache.setContent(data);
+    Cache cache = new Cache(data, key);
     cache.setExpiredAt();
     cache._save(cache);
 
@@ -67,25 +92,30 @@ class Cache {
   static Future load (String key, [bool list = false]) async {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String cacheData        = prefs.getString(key + 'ExpiredAt');
 
-    if (cacheData != null) {
-      int time = int.parse(cacheData);
-      if (time < Cache._currentTimeInSeconds()) {
-        prefs.remove(key + 'ExpiredAt');
-        prefs.remove(key);
-      }
-    }
+    Map keys = json.decode(prefs.getString(key));
 
-    if (list) {
-      return prefs.getStringList(key);
-    }
+    Cache cache = new Cache.rebuild(key);
+    cache.setContent(prefs.getString(keys['content']), keys['content']);
+    cache.setType(prefs.getString(keys['type']), keys['type']);
+    cache.setExpiredAt();
 
-    try {
-      return json.decode(prefs.getString(key));
-    } catch (e) {
-      return prefs.getString(key);
-    }
+    return cache.type == 'String' 
+      ? cache.content
+      : jsonDecode(cache.content);
+  }
+
+  void _save (Cache cache) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    Map<String, String> map = {
+      'content' : cache.contentKey,
+      'type'    : cache.typeKey
+    };
+
+    prefs.setString(cache.key, jsonEncode(map));
+    prefs.setString(cache.contentKey, cache.content);
+    prefs.setString(cache.typeKey, cache.type);
   }
 
   static Future clear () async {
@@ -102,42 +132,44 @@ class Cache {
     var ms = (new DateTime.now()).millisecondsSinceEpoch;
     return (ms / 1000).round();
   }
-
-  void _save (Cache cache) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    prefs.setString(cache.key, cache.content);
-  }
 }
 
 class Parse {
 
-  static cacheContent (var data) {
+  static content (var data) {
     /* @type String */
-    if (data is String) return data;
+    if (data is String) return {
+      'content' : data,
+      'type'    : 'String'
+    };
 
     /* @type Map */
-    if (data is Map) return json.encode(data);
+    if (data is Map) return {
+      'content' : json.encode(data),
+      'type'    : 'Map'
+    };
 
-    /* @type List<String> */
-    if (data is List<String>) {
-      List<String> list = data.map((i) => i.toString()).toList();
-      return list;
-    }
+    throw ('Unsupported Data Type');
 
-    /* @type List<Map> */
-    if (data is List<Map>) {
-      List<String> list = data.map((i) => json.encode(i)).toList();
-      return list;
-    }
+    // /* @type List<String> */
+    // if (data is List<String>) {
+    //   List<String> list = data.map((i) => i.toString()).toList();
+    //   return list;
+    // }
 
-    /* @type List<Map> */
-    if (data is ShouldCache) return json.encode(data.toMap());
+    // /* @type List<Map> */
+    // if (data is List<Map>) {
+    //   List<String> list = data.map((i) => json.encode(i)).toList();
+    //   return list;
+    // }
 
-    /* @type List<ShouldCache> */
-    if (data is List<ShouldCache>) {
-      List<String> list = data.map((i) => json.encode(i.toMap())).toList();
-      return list;
-    }
+    // /* @type List<Map> */
+    // if (data is ShouldCache) return json.encode(data.toMap());
+
+    // /* @type List<ShouldCache> */
+    // if (data is List<ShouldCache>) {
+    //   List<String> list = data.map((i) => json.encode(i.toMap())).toList();
+    //   return list;
+    // }
   }
 }

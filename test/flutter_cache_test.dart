@@ -122,14 +122,23 @@ void main() {
   //   expect(await Cache.remember(data, 'map'), data); // test for map
   // });
 
-  test('Can Cache by String', () async {
+  test('Can Cache Multiple Type', () async {
     /* Begin Test Setup */
     SharedPreferences.setMockInitialValues({});
     SharedPreferences pref = await SharedPreferences.getInstance();
+    String string = 'data';
+    Map map = {
+      'data1' : 'Ashraf Kamarudin',
+      'data2' : 'Programmer'
+    };
     /* End Test Setup */
 
-    expect(await Cache.overwrite('data', 'key'), 'data');
-    expect(pref.getString('key'), 'data');
-  });
+    print(string);
 
+    expect(await Cache.overwrite(string, 'string'), string);
+    // expect(pref.getString('string'), string);
+
+    expect(await Cache.overwrite(map, 'map'), map);
+    // expect(json.decode(pref.getString('map')), map);
+  });
 }
