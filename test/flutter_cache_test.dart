@@ -98,8 +98,41 @@ void main() {
 
   test('It can use anonymous function', () async {
 
+    await Cache.remember('key', () {
+      return 'old';
+    }, 5);
+
+    expect(await Cache.remember('key', () {
+      return 'new';
+    }), 'old');
+
+    await Future.delayed(const Duration(seconds: 6), (){});
+
+    expect(await Cache.remember('key', () {
+      return 'new';
+    }), 'new');
+
     expect(await Cache.remember('string', () {
       return 'test';
     }), 'test');
+
+    expect(await Cache.remember('string', () => 'test'), 'test');
+  });
+
+  test('It will load first then fetch', () async {
+
+    await Cache.remember('key', () {
+      return 'old';
+    }, 5);
+
+    expect(await Cache.remember('key', () {
+      return 'new';
+    }), 'old');
+
+    await Future.delayed(const Duration(seconds: 6), (){});
+
+    expect(await Cache.remember('key', () {
+      return 'new';
+    }), 'new');
   });
 }
