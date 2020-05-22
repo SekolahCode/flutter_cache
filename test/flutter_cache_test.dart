@@ -125,7 +125,7 @@ void main() {
   test('It Can Cache Multiple Type', () async {
     /* Begin Test Setup */
     SharedPreferences.setMockInitialValues({});
-    SharedPreferences pref = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     String string = 'data';
     Map map = {
       'data1' : 'Ashraf Kamarudin',
@@ -145,7 +145,7 @@ void main() {
   test('It can load Cached data', () async {
     /* Begin Test Setup */
     SharedPreferences.setMockInitialValues({});
-    SharedPreferences pref = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     String string = 'data';
     Map map = {
       'data1' : 'Ashraf Kamarudin',
@@ -158,5 +158,22 @@ void main() {
 
     expect(await Cache.load('string'), string);
     expect(await Cache.load('map'), map);
+  });
+
+  test('It will load if data exist else create new then load', () async {
+    /* Begin Test Setup */
+    SharedPreferences.setMockInitialValues({});
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String string = 'data';
+    Map map = {
+      'data1' : 'Ashraf Kamarudin',
+      'data2' : 'Programmer'
+    };
+    /* End Test Setup */
+
+    Cache.write('ExistingData', 'existing');
+
+    expect(await Cache.remember(string, 'string'), string);
+    expect(await Cache.remember('NewData', 'existing'), 'ExistingData');
   });
 }

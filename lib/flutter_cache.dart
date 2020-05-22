@@ -55,26 +55,11 @@ class Cache {
   * This function will return cached data if exist, null if created
   */
   static Future remember (var data, String key, [int expiredAt]) async {
-    // try {
-    //   var cacheData;
-    //   data is List
-    //     ? cacheData = await Cache.load(key, true)
-    //     : cacheData = await Cache.load(key);
+    if (await Cache.load(key) == null) {
+      return Cache.write(data, key, expiredAt);
+    }
 
-    //     if (cacheData == null) {
-    //       throw('No Cache Data'); // throw to create new cache
-    //     } else {
-    //       return cacheData;
-    //     }
-    // } catch (e) {
-    //   expiredAt == null 
-    //     ?  Cache.write(data, key)
-    //     :  Cache.write(data, key, expiredAt);
-    // }
-
-    // try {
-    //   cache.load()
-    // }
+    return Cache.load(key);
   }
 
   /*
@@ -93,7 +78,9 @@ class Cache {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    Map keys = json.decode(prefs.getString(key));
+    if (prefs.getString(key) == null) return prefs.getString(key);
+
+    Map keys = jsonDecode(prefs.getString(key));
 
     Cache cache = new Cache.rebuild(key);
     cache.setContent(prefs.getString(keys['content']), keys['content']);
