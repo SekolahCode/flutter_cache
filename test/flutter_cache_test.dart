@@ -122,7 +122,7 @@ void main() {
   //   expect(await Cache.remember(data, 'map'), data); // test for map
   // });
 
-  test('Can Cache Multiple Type', () async {
+  test('It Can Cache Multiple Type', () async {
     /* Begin Test Setup */
     SharedPreferences.setMockInitialValues({});
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -135,10 +135,10 @@ void main() {
 
     print(string);
 
-    expect(await Cache.overwrite(string, 'string'), string);
+    expect(await Cache.write(string, 'string'), string);
     // expect(pref.getString('string'), string);
 
-    expect(await Cache.overwrite(map, 'map'), map);
+    expect(await Cache.write(map, 'map'), map);
     // expect(json.decode(pref.getString('map')), map);
   });
 }
