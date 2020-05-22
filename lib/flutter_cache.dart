@@ -22,7 +22,7 @@ class Cache {
   /*
   * Cache Class Constructors Section
   */
-  Cache (data, key) {
+  Cache (key, data) {
     Map parsedData = Parse.content(data);
 
     this.key = key;
@@ -61,9 +61,9 @@ class Cache {
   * 
   * @return Cache.content
   */
-  static Future remember (var data, String key, [int expiredAt]) async {
+  static Future remember (String key, var data, [int expiredAt]) async {
     if (await Cache.load(key) == null) {
-      return Cache.write(data, key, expiredAt);
+      return Cache.write(key, data, expiredAt);
     }
 
     return Cache.load(key);
@@ -74,9 +74,9 @@ class Cache {
   *
   * @return Cache.content
   */
-  static Future write (var data, String key, [int expiredAfter]) async {
+  static Future write (String key, var data, [int expiredAfter]) async {
 
-    Cache cache = new Cache(data, key);
+    Cache cache = new Cache(key, data);
     if (expiredAfter != null) cache.setExpiredAfter(expiredAfter);
 
     cache._save(cache);
