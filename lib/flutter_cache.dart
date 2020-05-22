@@ -68,15 +68,15 @@ class Cache {
         }
     } catch (e) {
       expiredAt == null 
-        ?  Cache.overwrite(data, key)
-        :  Cache.overwrite(data, key, expiredAt);
+        ?  Cache.write(data, key)
+        :  Cache.write(data, key, expiredAt);
     }
   }
 
   /*
   * This is where the date is saved in Shared Preference
   */
-  static Future overwrite (var data, String key, [int expiredAt]) async {
+  static Future write (var data, String key, [int expiredAt]) async {
 
     Cache cache = new Cache(data, key);
     cache.setExpiredAt();
