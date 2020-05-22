@@ -4,12 +4,12 @@ A simple cache package for flutter. This package is a wrapper for shared prefere
 
 ```dart
 // create new cache.
-Cache.remember('data', 'key'); 
-Cache.write('data', 'key'); 
+Cache.remember('key', 'data'); 
+Cache.write('key', 'data'); 
 
 // add Cache lifetime on create
-Cache.remember('data', 'key', 120); 
-Cache.write('data', 'key', 120); 
+Cache.remember('key', 'data', 120); 
+Cache.write('key', 'data', 120); 
 
 // load Cache by key
 Cache.load('key); // This will load the cache data.
@@ -46,7 +46,7 @@ import 'package:flutter_cache/flutter_cache.dart';
 
 ### What Can this Package Do ?
 
-1. Cache String, List<String>, List<Map> and Map for forever or for a limited time.
+1. Cache `String`, `Map`, `List<String>` and `List<Map>` for forever or for a limited time.
 2. Load the cache you've cached.
 3. Clear All Cache.
 4. Clear Single Cache.
@@ -58,13 +58,13 @@ import 'package:flutter_cache/flutter_cache.dart';
 If data already exist, then it will use the data in the cache. If it's not, It will fetch the data. You can also set Cache lifetime so your app would fetch again everytime the Cache dies.
 
 ```dart
-await Cache.remember('string', () {
+await Cache.remember('key', () {
   return 'test' // or logic fetching data from api;
 });
 
 // or 
 
-await Cache.remember('string', () => 'test')
+await Cache.remember('key', () => 'test')
 ```
 
 #### Saved data for limited time
@@ -72,13 +72,13 @@ await Cache.remember('string', () => 'test')
 The data will be destroyed when it reached the time you set.
 
 ```dart
-Cache.remember('data', 'key', 120); // saved for 2 mins or 120 seconds
-Cache.write('data', 'key', 120);
+Cache.remember('key', 'data', 120); // saved for 2 mins or 120 seconds
+Cache.write('key', 'data', 120);
 ```
 
 #### Cache multipe datatype
 
-You can cache multiple datatype. Supported datatype for now are String, Map, List<String> and List<Map>. When you use `cache.load()` to get back the data, it will return the data in the original datatype.
+You can cache multiple datatype. Supported datatype for now are `String`, `Map`, `List<String>` and `List<Map>`. When you use `cache.load()` to get back the data, it will return the data in the original datatype.
 
 ```dart
 Cache.remember({ // multi depth map datatype.

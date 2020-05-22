@@ -6,3 +6,7 @@
 
 * Added support for anonymous function
 * Update Readme with detailed Explaination
+
+## [0.0.3] - Test Phase.
+
+* fix readme, showed wrong example.
