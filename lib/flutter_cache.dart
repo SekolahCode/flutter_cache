@@ -8,15 +8,21 @@ class Cache {
 
   String key;
 
+  /* Cache Content*/
   String contentKey;
   var content;
 
+  /* Cache Content's Type*/
   String typeKey;
   String type;
 
+  /* Cache Expiry*/
   String expiredAtKey;
   int expiredAt;
 
+  /*
+  * Cache Class Constructors Section
+  */
   Cache (data, key) {
     Map parsedData = Parse.content(data);
 
@@ -29,6 +35,9 @@ class Cache {
     this.key = key;
   }
 
+  /*
+  * Cache Class Setters & Getters
+  */  
   setKey (String key) {
     this.key = key;
   }
@@ -47,12 +56,11 @@ class Cache {
     this.expiredAt = Cache._currentTimeInSeconds();
   }
 
-  String _generateCompositeKey(String keyType) {
-    return keyType + Cache._currentTimeInSeconds().toString() + this.key;
-  }
-
   /*
-  * This function will return cached data if exist, null if created
+  * This function will return cached data if exist, 
+  * If not exist, will create new cached data.
+  * 
+  * @return Cache.content
   */
   static Future remember (var data, String key, [int expiredAt]) async {
     if (await Cache.load(key) == null) {
@@ -64,6 +72,8 @@ class Cache {
 
   /*
   * This will overwrite data if exist and create new if not.
+  *
+  * @return Cache.content
   */
   static Future write (var data, String key, [int expiredAt]) async {
 
@@ -74,14 +84,18 @@ class Cache {
     return Cache.load(key);
   }
 
+  /*
+  * load saved cached data.
+  *
+  * @return Cache.content
+  */
   static Future load (String key, [bool list = false]) async {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     if (prefs.getString(key) == null) return prefs.getString(key);
-    
-    Map keys = jsonDecode(prefs.getString(key));
-
+  
+    Map keys    = jsonDecode(prefs.getString(key));
     Cache cache = new Cache.rebuild(key);
 
     if (prefs.getString(keys['type']) == 'String') cache.setContent(prefs.getString(keys['content']), keys['content']);
@@ -95,6 +109,11 @@ class Cache {
     return cache.content;
   }
 
+  /*
+  * Saved cached contents into Shared Preference
+  *
+  * @return void
+  */
   void _save (Cache cache) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -111,14 +130,33 @@ class Cache {
     prefs.setString(cache.typeKey, cache.type);
   }
 
+  /*
+  * will clear all shared preference data
+  *
+  * @return void
+  */
   static Future clear () async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.clear();
   }
 
+  /*
+  * unset single shared preference key
+  *
+  * @return void
+  */
   static Future destroy (String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove(key);
+  }
+
+  /*
+  * Cache Class Helper Function Section
+  *
+  * This is where all custom functions used by this class reside.
+  */
+  String _generateCompositeKey(String keyType) {
+    return keyType + Cache._currentTimeInSeconds().toString() + this.key;
   }
 
   static int _currentTimeInSeconds() { // private
