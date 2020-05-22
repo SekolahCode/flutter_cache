@@ -63,31 +63,31 @@ void main() {
   });
 
   test('It Can Cache Multiple Type', () async {
-    expect(await Cache.write(string, 'string'), string);
-    expect(await Cache.write(map, 'map'), map);
-    expect(await Cache.write(map2, 'map2'), map2);
-    expect(await Cache.write(listString, 'listString'), listString);
-    expect(await Cache.write(listMap, 'listMap'), listMap);
-    expect(await Cache.write(listMap2, 'listMap2'), listMap2);
+    expect(await Cache.write('string', string), string);
+    expect(await Cache.write('map', map), map);
+    expect(await Cache.write('map2', map2), map2);
+    expect(await Cache.write('listString', listString), listString);
+    expect(await Cache.write('listMap', listMap), listMap);
+    expect(await Cache.write('listMap2', listMap2), listMap2);
   });
 
   test('It can load Cached data', () async {
-    await Cache.write(string, 'string');
-    await Cache.write(map, 'map');
+    await Cache.write('string', string);
+    await Cache.write('map', map);
 
     expect(await Cache.load('string'), string);
     expect(await Cache.load('map'), map);
   });
 
   test('It will load if data exist else create new then load', () async {
-    Cache.write('ExistingData', 'existing');
+    Cache.write('existing', 'ExistingData');
 
-    expect(await Cache.remember(string, 'string'), string);
-    expect(await Cache.remember('NewData', 'existing'), 'ExistingData');
+    expect(await Cache.remember('string', string), string);
+    expect(await Cache.remember('existing', 'NewData'), 'ExistingData');
   });
   
   test('It will remove cache data if passed expiry time', () async {
-    Cache.write('data', 'willExpire', 2);
+    Cache.write('willExpire', 'data', 2);
 
     expect(await Cache.load('willExpire'), 'data');
 
