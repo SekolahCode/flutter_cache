@@ -9,7 +9,7 @@ class Cache {
   String key;
 
   String contentKey;
-  String content;
+  var content;
 
   String typeKey;
   String type;
@@ -79,17 +79,20 @@ class Cache {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     if (prefs.getString(key) == null) return prefs.getString(key);
-
+    
     Map keys = jsonDecode(prefs.getString(key));
 
     Cache cache = new Cache.rebuild(key);
-    cache.setContent(prefs.getString(keys['content']), keys['content']);
+
+    if (prefs.getString(keys['type']) == 'String') cache.setContent(prefs.getString(keys['content']), keys['content']);
+    if (prefs.getString(keys['type']) == 'Map') cache.setContent(jsonDecode(prefs.getString(keys['content'])), keys['content']);
+    if (prefs.getString(keys['type']) == 'List<String>') cache.setContent(prefs.getStringList(keys['content']), keys['content']);
+
+    // cache.setContent(prefs.getString(keys['content']), keys['content']);
     cache.setType(prefs.getString(keys['type']), keys['type']);
     cache.setExpiredAt();
 
-    return cache.type == 'String' 
-      ? cache.content
-      : jsonDecode(cache.content);
+    return cache.content;
   }
 
   void _save (Cache cache) async {
@@ -101,7 +104,10 @@ class Cache {
     };
 
     prefs.setString(cache.key, jsonEncode(map));
-    prefs.setString(cache.contentKey, cache.content);
+
+    if (cache.content is String) prefs.setString(cache.contentKey, cache.content);
+    if (cache.content is List) prefs.setStringList(cache.contentKey, cache.content);
+
     prefs.setString(cache.typeKey, cache.type);
   }
 
@@ -136,13 +142,16 @@ class Parse {
       'type'    : 'Map'
     };
 
-    throw ('Unsupported Data Type');
+    /* @type List<String> */
+    if (data is List<String>) {
+      List<String> list = data.map((i) => i.toString()).toList();
+      return {
+        'content' : list,
+        'type'    : 'List<String>'
+      };
+    }
 
-    // /* @type List<String> */
-    // if (data is List<String>) {
-    //   List<String> list = data.map((i) => i.toString()).toList();
-    //   return list;
-    // }
+    throw ('Unsupported Data Type');
 
     // /* @type List<Map> */
     // if (data is List<Map>) {

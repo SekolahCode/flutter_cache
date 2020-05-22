@@ -131,15 +131,15 @@ void main() {
       'data1' : 'Ashraf Kamarudin',
       'data2' : 'Programmer'
     };
+    List<String> listString = [
+      'Ashraf',
+      'Kamarudin'
+    ];
     /* End Test Setup */
 
-    print(string);
-
     expect(await Cache.write(string, 'string'), string);
-    // expect(pref.getString('string'), string);
-
     expect(await Cache.write(map, 'map'), map);
-    // expect(json.decode(pref.getString('map')), map);
+    expect(await Cache.write(listString, 'listString'), listString);
   });
 
   test('It can load Cached data', () async {
