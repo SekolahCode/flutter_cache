@@ -1,3 +1,8 @@
-## [0.0.1] - TODO: Add release date.
+## [0.0.1] - Test Phase.
 
-* TODO: Describe initial release.
+* Initial Release Version 0
+
+## [0.0.2] - Test Phase.
+
+* Added support for anonymous function
+* Update Readme with detailed Explaination
