@@ -55,36 +55,36 @@ class Cache {
   * This function will return cached data if exist, null if created
   */
   static Future remember (var data, String key, [int expiredAt]) async {
-    try {
-      var cacheData;
-      data is List
-        ? cacheData = await Cache.load(key, true)
-        : cacheData = await Cache.load(key);
+    // try {
+    //   var cacheData;
+    //   data is List
+    //     ? cacheData = await Cache.load(key, true)
+    //     : cacheData = await Cache.load(key);
 
-        if (cacheData == null) {
-          throw('No Cache Data'); // throw to create new cache
-        } else {
-          return cacheData;
-        }
-    } catch (e) {
-      expiredAt == null 
-        ?  Cache.write(data, key)
-        :  Cache.write(data, key, expiredAt);
-    }
+    //     if (cacheData == null) {
+    //       throw('No Cache Data'); // throw to create new cache
+    //     } else {
+    //       return cacheData;
+    //     }
+    // } catch (e) {
+    //   expiredAt == null 
+    //     ?  Cache.write(data, key)
+    //     :  Cache.write(data, key, expiredAt);
+    // }
+
+    // try {
+    //   cache.load()
+    // }
   }
 
   /*
-  * This is where the date is saved in Shared Preference
+  * This will overwrite data if exist and create new if not.
   */
   static Future write (var data, String key, [int expiredAt]) async {
 
     Cache cache = new Cache(data, key);
     cache.setExpiredAt();
     cache._save(cache);
-
-    // if (data is List) { // return list
-    //   return Cache.load(key, true);
-    // }
 
     return Cache.load(key);
   }
