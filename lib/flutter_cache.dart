@@ -1,7 +1,6 @@
 library flutter_cache;
 
 import 'dart:convert';
-import 'package:flutter_cache/ShouldCache.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Cache {
@@ -101,6 +100,10 @@ class Cache {
     if (prefs.getString(keys['type']) == 'String') cache.setContent(prefs.getString(keys['content']), keys['content']);
     if (prefs.getString(keys['type']) == 'Map') cache.setContent(jsonDecode(prefs.getString(keys['content'])), keys['content']);
     if (prefs.getString(keys['type']) == 'List<String>') cache.setContent(prefs.getStringList(keys['content']), keys['content']);
+    if (prefs.getString(keys['type']) == 'List<Map>') {
+      List list = (prefs.getStringList(keys['content'])).map((i) => jsonDecode(i)).toList();
+      cache.setContent(list, keys['content']);
+    }
 
     // cache.setContent(prefs.getString(keys['content']), keys['content']);
     cache.setType(prefs.getString(keys['type']), keys['type']);
@@ -176,34 +179,27 @@ class Parse {
 
     /* @type Map */
     if (data is Map) return {
-      'content' : json.encode(data),
+      'content' : jsonEncode(data),
       'type'    : 'Map'
     };
 
     /* @type List<String> */
     if (data is List<String>) {
-      List<String> list = data.map((i) => i.toString()).toList();
       return {
-        'content' : list,
+        'content' : data,
         'type'    : 'List<String>'
       };
     }
 
+    /* @type List<Map> */
+    if (data is List<Map>) {
+      List<String> list = data.map((i) => jsonEncode(i)).toList();
+      return {
+        'content' : list,
+        'type'    : 'List<Map>'
+      };
+    }
+
     throw ('Unsupported Data Type');
-
-    // /* @type List<Map> */
-    // if (data is List<Map>) {
-    //   List<String> list = data.map((i) => json.encode(i)).toList();
-    //   return list;
-    // }
-
-    // /* @type List<Map> */
-    // if (data is ShouldCache) return json.encode(data.toMap());
-
-    // /* @type List<ShouldCache> */
-    // if (data is List<ShouldCache>) {
-    //   List<String> list = data.map((i) => json.encode(i.toMap())).toList();
-    //   return list;
-    // }
   }
 }
