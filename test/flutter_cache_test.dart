@@ -141,4 +141,22 @@ void main() {
     expect(await Cache.write(map, 'map'), map);
     // expect(json.decode(pref.getString('map')), map);
   });
+
+  test('It can load Cached data', () async {
+    /* Begin Test Setup */
+    SharedPreferences.setMockInitialValues({});
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    String string = 'data';
+    Map map = {
+      'data1' : 'Ashraf Kamarudin',
+      'data2' : 'Programmer'
+    };
+    /* End Test Setup */
+
+    await Cache.write(string, 'string');
+    await Cache.write(map, 'map');
+
+    expect(await Cache.load('string'), string);
+    expect(await Cache.load('map'), map);
+  });
 }
