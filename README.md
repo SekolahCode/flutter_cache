@@ -59,12 +59,12 @@ If data already exist, then it will use the data in the cache. If it's not, It w
 
 ```dart
 await Cache.remember('key', () {
-  return 'test' // or logic fetching data from api;
+  return 'test'; // or logic fetching data from api;
 });
 
 // or 
 
-await Cache.remember('key', () => 'test')
+await Cache.remember('key', () => 'test');
 ```
 
 #### Saved data for limited time
@@ -81,7 +81,7 @@ Cache.write('key', 'data', 120);
 You can cache multiple datatype. Supported datatype for now are `String`, `Map`, `List<String>` and `List<Map>`. When you use `cache.load()` to get back the data, it will return the data in the original datatype.
 
 ```dart
-Cache.remember({ // multi depth map datatype.
+Cache.remember('key', { 
   'name' : 'Ashraf Kamarudin',
   'depth2' : {
     'name' : 'depth2',
@@ -89,7 +89,7 @@ Cache.remember({ // multi depth map datatype.
       'name': 'depth3'
     } 
   }
-}, 'key)
+});
 
 Cache.load('key'); // will return data in map datatype.
 ```

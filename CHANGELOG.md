@@ -10,3 +10,7 @@
 ## [0.0.3] - Test Phase.
 
 * fix readme, showed wrong example.
+
+## [0.0.4] - Test Phase.
+
+* added example on /example
