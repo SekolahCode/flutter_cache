@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter_cache/flutter_cache.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -135,11 +134,35 @@ void main() {
       'Ashraf',
       'Kamarudin'
     ];
-    /* End Test Setup */
+    List<Map> listMap = [
+      {
+        'name': 'Ashraf'
+      },
+      {
+        'name': 'Kamarudin'
+      }
+    ];
+
+    List<Map> listMap2 = [
+      {
+        'name': 'Ashraf'
+      },
+      {
+        'name': 'Kamarudin'
+      },
+      {
+        'name': 'Kamarudin',
+        'map': {
+          'age': 'we'
+        }
+      },
+    ];
 
     expect(await Cache.write(string, 'string'), string);
     expect(await Cache.write(map, 'map'), map);
     expect(await Cache.write(listString, 'listString'), listString);
+    expect(await Cache.write(listMap, 'listMap'), listMap);
+    expect(await Cache.write(listMap2, 'listMap2'), listMap2);
   });
 
   test('It can load Cached data', () async {
