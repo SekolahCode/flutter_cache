@@ -6,6 +6,23 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Cache {
 
+  String key;
+  String content;
+  String type;
+  int expiredAt;
+
+  setContent (var data) {
+    this.content = Parse.cacheContent(data);
+  }
+
+  setKey (String key) {
+    this.key = key;
+  }
+
+  setExpiredAt () {
+    this.expiredAt = Cache._currentTimeInSeconds();
+  }
+
   /*
   * This function will return cached data if exist, null if created
   */
@@ -31,41 +48,18 @@ class Cache {
   /*
   * This is where the date is saved in Shared Preference
   */
-  static Future<void> overwrite (var data, String key, [int expiredAt]) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+  static Future overwrite (var data, String key, [int expiredAt]) async {
 
-    /* @type String */
-    if (data is String) prefs.setString(key, data);
+    Cache cache = new Cache();
 
-    /* @type Map */
-    if (data is Map) prefs.setString(key, json.encode(data));
+    cache.setKey(key);
+    cache.setContent(data);
+    cache.setExpiredAt();
+    cache._save(cache);
 
-    /* @type List<String> */
-    if (data is List<String>) {
-      List<String> list = data.map((i) => i.toString()).toList();
-      prefs.setStringList(key, list);
-    }
-
-    /* @type List<Map> */
-    if (data is List<Map>) {
-      List<String> list = data.map((i) => json.encode(i)).toList();
-      prefs.setStringList(key, list);
-    }
-
-    /* @type List<Map> */
-    if (data is ShouldCache) prefs.setString(key, json.encode(data.toMap()));
-
-    /* @type List<ShouldCache> */
-    if (data is List<ShouldCache>) {
-      List<String> list = data.map((i) => json.encode(i.toMap())).toList();
-      prefs.setStringList(key, list);
-    }
-
-    if (expiredAt != null) prefs.setString(key + 'ExpiredAt', (Cache._currentTimeInSeconds() + expiredAt).toString());
-
-    if (data is List) { // return list
-      return Cache.load(key, true);
-    }
+    // if (data is List) { // return list
+    //   return Cache.load(key, true);
+    // }
 
     return Cache.load(key);
   }
@@ -107,5 +101,43 @@ class Cache {
   static int _currentTimeInSeconds() { // private
     var ms = (new DateTime.now()).millisecondsSinceEpoch;
     return (ms / 1000).round();
+  }
+
+  void _save (Cache cache) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    prefs.setString(cache.key, cache.content);
+  }
+}
+
+class Parse {
+
+  static cacheContent (var data) {
+    /* @type String */
+    if (data is String) return data;
+
+    /* @type Map */
+    if (data is Map) return json.encode(data);
+
+    /* @type List<String> */
+    if (data is List<String>) {
+      List<String> list = data.map((i) => i.toString()).toList();
+      return list;
+    }
+
+    /* @type List<Map> */
+    if (data is List<Map>) {
+      List<String> list = data.map((i) => json.encode(i)).toList();
+      return list;
+    }
+
+    /* @type List<Map> */
+    if (data is ShouldCache) return json.encode(data.toMap());
+
+    /* @type List<ShouldCache> */
+    if (data is List<ShouldCache>) {
+      List<String> list = data.map((i) => json.encode(i.toMap())).toList();
+      return list;
+    }
   }
 }
