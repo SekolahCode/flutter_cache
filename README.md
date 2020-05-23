@@ -1,4 +1,8 @@
 # flutter_cache
+[![Dependencies Status](https://img.shields.io/librariesio/github/sekolahcode/flutter_cache)](https://libraries.io/github/SekolahCode/flutter_cache)
+[![file size](https://img.shields.io/github/size/sekolahcode/flutter_cache/lib/flutter_cache.dart)](https://img.shields.io/github/size/sekolahcode/flutter_cache/lib/flutter_cache.dart)
+[![GitHub Issues](https://img.shields.io/github/issues/sekolahcode/flutter_cache)](https://github.com/SekolahCode/flutter_cache/issues)
+[![follows on twitter](https://img.shields.io/twitter/follow/sekolahcode?label=Follow&style=social)](https://twitter.com/sekolahcode)
 
 A simple cache package for flutter. This package is a wrapper for shared preference and makes working with shared preference easier. Once it has been installed, you can do these things.
 
