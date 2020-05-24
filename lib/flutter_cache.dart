@@ -101,7 +101,6 @@ class Cache {
     // Guard
     if (prefs.getString(key) == null) return null;
     if (Cache._isExpired(prefs.getInt(key + 'ExpiredAt'))) {
-      Cache.destroy(key + 'ExpiredAt');
       Cache.destroy(key);
 
       return null;
@@ -162,7 +161,13 @@ class Cache {
   */
   static Future destroy (String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    Map keys                = jsonDecode(prefs.getString(key));
+
+    // remove all cache trace
     prefs.remove(key);
+    prefs.remove(keys['content']);
+    prefs.remove(keys['type']);
+    prefs.remove(key + 'ExpiredAt');
   }
 
   /*
