@@ -1,6 +1,6 @@
 name: flutter_cache
 description: A simple cache package for flutter. This package is a wrapper for shared preference and makes working with shared preference easier. Once it has been installed, you can do these things.
-version: 0.0.4
+version: 0.0.5
 author: Ashraf Kamarudin
 homepage: https://github.com/SekolahCode/flutter_cache
 

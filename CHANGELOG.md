@@ -14,3 +14,8 @@
 ## [0.0.4] - Test Phase.
 
 * added example on /example
+
+## [0.0.5] - Fixes.
+
+* clear cache trace on cache destroy.
+* added test for cache destroy.
