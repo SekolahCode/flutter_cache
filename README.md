@@ -33,7 +33,7 @@ First include the package dependency in your project's `pubspec.yaml` file
 
 ```yaml
 dependencies:
-  flutter_cache: ^0.0.5
+  flutter_cache: ^0.0.6
 ```
 
 You can install the package via pub get:
@@ -62,13 +62,20 @@ import 'package:flutter_cache/flutter_cache.dart';
 If data already exist, then it will use the data in the cache. If it's not, It will fetch the data. You can also set Cache lifetime so your app would fetch again everytime the Cache dies.
 
 ```dart
-await Cache.remember('key', () {
-  return 'test'; // or logic fetching data from api;
-});
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+var test = await Cache.remember('servers', () async {
+  var response = await http.get('http://dummy.restapiexample.com/api/v1/employees');
+  return jsonDecode(response.body)['data'];
+}, 120); // cache for 2 mins
 
 // or 
 
-await Cache.remember('key', () => 'test');
+// cache for 2 mins
+var test = await Cache.remember('servers', () async => jsonDecode( (await http.get( 'http://dummy.restapiexample.com/api/v1/employees' )).body )['data'], 120);
+
+print(test);
 ```
 
 #### Saved data for limited time
