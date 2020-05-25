@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_cache/flutter_cache.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -134,5 +136,23 @@ void main() {
     expect(await Cache.remember('key', () {
       return 'new';
     }), 'new');
+  });
+
+  test('It will delete all cache trace', () async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  await Cache.write('string', string, 10);
+
+  // get all keys before destroy
+  Map keys = jsonDecode(prefs.getString('string'));
+  Cache.destroy('string');
+
+  // to make sure it works without await
+  await Future.delayed(const Duration(seconds: 5), (){});
+
+  expect(prefs.getString('string'), null);
+  expect(prefs.getString('string' + 'ExpiredAt'), null);
+  expect(prefs.getString(keys['content']), null);
+  expect(prefs.getString(keys['type']), null);
   });
 }
