@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_cache/shouldCache.dart';
 
 class Parse {
   static content(var data) {
@@ -16,6 +17,12 @@ class Parse {
     /* @type List<Map> */
     if (data is List<Map>) {
       List<String> list = data.map((i) => jsonEncode(i)).toList();
+      return {'content': list, 'type': 'List<Map>'};
+    }
+
+    /* @type List<Map> */
+    if (data is List<ShouldCache>) {
+      List<String> list = data.map((i) => jsonEncode(i.toMap())).toList();
       return {'content': list, 'type': 'List<Map>'};
     }
 

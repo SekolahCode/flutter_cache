@@ -64,7 +64,7 @@ class Cache {
   static Future remember (String key, var data, [int expiredAt]) async {
     if (await Cache.load(key) == null) {
       if (data is Function) {
-        data = data();
+        data = await data();
       }
 
       return Cache.write(key, data, expiredAt);
