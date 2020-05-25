@@ -139,20 +139,20 @@ void main() {
   });
 
   test('It will delete all cache trace', () async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  await Cache.write('string', string, 10);
+    await Cache.write('string', string, 10);
 
-  // get all keys before destroy
-  Map keys = jsonDecode(prefs.getString('string'));
-  Cache.destroy('string');
+    // get all keys before destroy
+    Map keys = jsonDecode(prefs.getString('string'));
+    Cache.destroy('string');
 
-  // to make sure it works without await
-  await Future.delayed(const Duration(seconds: 5), (){});
+    // to make sure it works without await
+    await Future.delayed(const Duration(seconds: 5), (){});
 
-  expect(prefs.getString('string'), null);
-  expect(prefs.getString('string' + 'ExpiredAt'), null);
-  expect(prefs.getString(keys['content']), null);
-  expect(prefs.getString(keys['type']), null);
+    expect(prefs.getString('string'), null);
+    expect(prefs.getString('string' + 'ExpiredAt'), null);
+    expect(prefs.getString(keys['content']), null);
+    expect(prefs.getString(keys['type']), null);
   });
 }
