@@ -63,11 +63,10 @@ class Cache {
   */
   static Future remember (String key, var data, [int expiredAt]) async {
     if (await Cache.load(key) == null) {
-
       if (data is Function) {
         data = data();
       }
-      
+
       return Cache.write(key, data, expiredAt);
     }
 
@@ -82,7 +81,8 @@ class Cache {
   static Future write (String key, var data, [int expiredAfter]) async {
 
     Cache cache = new Cache(key, data);
-    if (expiredAfter != null) cache.setExpiredAfter(expiredAfter);
+    if (expiredAfter != null) 
+      cache.setExpiredAfter(expiredAfter);
 
     cache._save(cache);
 
@@ -99,25 +99,33 @@ class Cache {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     // Guard
-    if (prefs.getString(key) == null) return null;
+    if (prefs.getString(key) == null) 
+      return null;
+
     if (Cache._isExpired(prefs.getInt(key + 'ExpiredAt'))) {
       Cache.destroy(key);
-
       return null;
     }
   
-    Map keys    = jsonDecode(prefs.getString(key));
-    Cache cache = new Cache.rebuild(key);
+    Map keys          = jsonDecode(prefs.getString(key));
+    Cache cache       = new Cache.rebuild(key);
+    String cacheType  = prefs.getString(keys['type']);
+    var cacheContent;
 
-    if (prefs.getString(keys['type']) == 'String') cache.setContent(prefs.getString(keys['content']), keys['content']);
-    if (prefs.getString(keys['type']) == 'Map') cache.setContent(jsonDecode(prefs.getString(keys['content'])), keys['content']);
-    if (prefs.getString(keys['type']) == 'List<String>') cache.setContent(prefs.getStringList(keys['content']), keys['content']);
-    if (prefs.getString(keys['type']) == 'List<Map>') {
-      List list = (prefs.getStringList(keys['content'])).map((i) => jsonDecode(i)).toList();
-      cache.setContent(list, keys['content']);
-    }
+    if (cacheType == 'String')        
+      cacheContent =  prefs.getString(keys['content']);
 
-    cache.setType(prefs.getString(keys['type']), keys['type']);
+    if (cacheType == 'Map')           
+      cacheContent = jsonDecode(prefs.getString(keys['content']));
+
+    if (cacheType == 'List<String>')  
+      cacheContent = prefs.getStringList(keys['content']);
+
+    if (cacheType == 'List<Map>')     
+      cacheContent = (prefs.getStringList(keys['content'])).map((i) => jsonDecode(i)).toList();
+
+    cache.setContent(cacheContent, keys['content']);
+    cache.setType(cacheType, keys['type']);
 
     return cache.content;
   }
@@ -129,17 +137,21 @@ class Cache {
   */
   void _save (Cache cache) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();    
-    
-    Map<String, String> map = {
+
+    // set Origincal Cache key to cache content's key and cache type's key
+    prefs.setString(cache.key, jsonEncode({
       'content' : cache.contentKey,
       'type'    : cache.typeKey
-    };
+    }));
 
-    prefs.setString(cache.key, jsonEncode(map));
+    if (cache.content is String) 
+      prefs.setString(cache.contentKey, cache.content);
 
-    if (cache.content is String) prefs.setString(cache.contentKey, cache.content);
-    if (cache.content is List) prefs.setStringList(cache.contentKey, cache.content);
-    if (cache.expiredAfter != null) prefs.setInt(key + 'ExpiredAt', cache.expiredAfter);
+    if (cache.content is List) 
+      prefs.setStringList(cache.contentKey, cache.content);
+      
+    if (cache.expiredAfter != null) 
+      prefs.setInt(key + 'ExpiredAt', cache.expiredAfter);
 
     prefs.setString(cache.typeKey, cache.type);
   }
@@ -149,7 +161,7 @@ class Cache {
   *
   * @return void
   */
-  static Future clear () async {
+  static void clear () async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.clear();
   }
@@ -159,7 +171,7 @@ class Cache {
   *
   * @return void
   */
-  static Future destroy (String key) async {
+  static void destroy (String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     Map keys                = jsonDecode(prefs.getString(key));
 
@@ -180,7 +192,7 @@ class Cache {
     return keyType + Cache._currentTimeInSeconds().toString() + this.key;
   }
 
-  static int _currentTimeInSeconds() { // private
+  static int _currentTimeInSeconds() {
     var ms = (new DateTime.now()).millisecondsSinceEpoch;
     return (ms / 1000).round();
   }
