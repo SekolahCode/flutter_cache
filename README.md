@@ -73,9 +73,12 @@ var test = await Cache.remember('servers', () async {
 // or 
 
 // cache for 2 mins
-var test = await Cache.remember('servers', () async => jsonDecode( (await http.get( 'http://dummy.restapiexample.com/api/v1/employees' )).body )['data'], 120);
-
-print(test);
+var test = await Cache.remember(
+    'servers', 
+    () async => jsonDecode( 
+        (await http.get( 'http://dummy.restapiexample.com/api/v1/employees' )
+    ).body )['data']
+, 120);
 ```
 
 #### Saved data for limited time
