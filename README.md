@@ -7,6 +7,8 @@
 A simple cache package for flutter. This package is a wrapper for shared preference and makes working with shared preference easier. Once it has been installed, you can do these things.
 
 ```dart
+import 'package:flutter_cache/flutter_cache.dart';
+
 // create new cache.
 Cache.remember('key', 'data'); 
 Cache.write('key', 'data'); 
@@ -64,10 +66,11 @@ If data already exist, then it will use the data in the cache. If it's not, It w
 ```dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_cache/flutter_cache.dart';
 
-var test = await Cache.remember('servers', () async {
+var test = await Cache.remember('employees', () async {
   var response = await http.get('http://dummy.restapiexample.com/api/v1/employees');
-  return jsonDecode(response.body)['data'];
+  return jsonDecode(response.body)['data'].cast<Map>();
 }, 120); // cache for 2 mins
 
 // or 
@@ -77,7 +80,7 @@ var test = await Cache.remember(
     'servers', 
     () async => jsonDecode( 
         (await http.get( 'http://dummy.restapiexample.com/api/v1/employees' )
-    ).body )['data']
+    ).body )['data'].cast<Map>()
 , 120);
 ```
 
