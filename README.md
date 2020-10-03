@@ -7,24 +7,24 @@
 A simple cache package for flutter. This package is a wrapper for shared preference and makes working with shared preference easier. Once it has been installed, you can do these things.
 
 ```dart
-import 'package:flutter_cache/flutter_cache.dart';
+import 'package:flutter_cache/flutter_cache.dart' as cache;
 
 // create new cache.
-Cache.remember('key', 'data'); 
-Cache.write('key', 'data'); 
+cache.remember('key', 'data'); 
+cache.write('key', 'data'); 
 
 // add Cache lifetime on create
-Cache.remember('key', 'data', 120); 
-Cache.write('key', 'data', 120); 
+cache.remember('key', 'data', 120); 
+cache.write('key', 'data', 120); 
 
 // load Cache by key
-Cache.load('key'); // This will load the cache data.
+cache.load('key'); // This will load the cache data.
 
 // destroy single cache by key
-Cache.destroy('key');
+cache.destroy('key');
 
 // destroy all cache
-Cache.clear();
+cache.clear();
 
 ```
 ## Getting Started
@@ -47,7 +47,7 @@ flutter pub get
 Then you can import it in your dart code like so
 
 ```dart
-import 'package:flutter_cache/flutter_cache.dart';
+import 'package:flutter_cache/flutter_cache.dart' as cache;
 ```
 
 ### What Can this Package Do ?
@@ -66,9 +66,9 @@ If data already exist, then it will use the data in the cache. If it's not, It w
 ```dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:flutter_cache/flutter_cache.dart';
+import 'package:flutter_cache/flutter_cache.dart' as cache;
 
-var employees = await Cache.remember('employees', () async {
+var employees = await cache.remember('employees', () async {
   var response = await http.get('http://dummy.restapiexample.com/api/v1/employees');
   return jsonDecode(response.body)['data'].cast<Map>();
 }, 120); // cache for 2 mins
@@ -76,7 +76,7 @@ var employees = await Cache.remember('employees', () async {
 // or 
 
 // cache for 2 mins
-var employees = await Cache.remember(
+var employees = await cache.remember(
     'servers', 
     () async => jsonDecode( 
         (await http.get( 'http://dummy.restapiexample.com/api/v1/employees' )
@@ -89,8 +89,8 @@ var employees = await Cache.remember(
 The data will be destroyed when it reached the time you set.
 
 ```dart
-Cache.remember('key', 'data', 120); // saved for 2 mins or 120 seconds
-Cache.write('key', 'data', 120);
+cache.remember('key', 'data', 120); // saved for 2 mins or 120 seconds
+cache.write('key', 'data', 120);
 ```
 
 #### Cache multipe datatype
@@ -98,7 +98,7 @@ Cache.write('key', 'data', 120);
 You can cache multiple datatype. Supported datatype for now are `String`, `Map`, `List<String>` and `List<Map>`. When you use `cache.load()` to get back the data, it will return the data in the original datatype.
 
 ```dart
-Cache.remember('key', { 
+cache.remember('key', { 
   'name' : 'Ashraf Kamarudin',
   'depth2' : {
     'name' : 'depth2',
@@ -108,5 +108,5 @@ Cache.remember('key', {
   }
 });
 
-Cache.load('key'); // will return data in map datatype.
+cache.load('key'); // will return data in map datatype.
 ```
