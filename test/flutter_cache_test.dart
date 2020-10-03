@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:flutter_cache/flutter_cache.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
-
   String string;
   Map map;
   Map map2;
@@ -16,139 +16,131 @@ void main() {
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    
+
     string = 'data';
 
-    map = {
-      'data1' : 'Ashraf Kamarudin',
-      'data2' : 'Programmer'
-    };
+    map = {'data1': 'Ashraf Kamarudin', 'data2': 'Programmer'};
 
-    map2 = { // multi depth map
-      'name' : 'Ashraf Kamarudin',
-      'depth2' : {
-        'name' : 'depth2',
-        'depth3' : {
-          'name': 'depth3'
-        } 
+    map2 = {
+      // multi depth map
+      'name': 'Ashraf Kamarudin',
+      'depth2': {
+        'name': 'depth2',
+        'depth3': {'name': 'depth3'}
       }
     };
 
-    listString = [
-      'Ashraf',
-      'Kamarudin'
-    ];
+    listString = ['Ashraf', 'Kamarudin'];
 
     listMap = [
-      {
-        'name': 'Ashraf'
-      },
-      {
-        'name': 'Kamarudin'
-      }
+      {'name': 'Ashraf'},
+      {'name': 'Kamarudin'}
     ];
 
-    listMap2 = [ // multi depth list map
-      {
-        'name': 'Ashraf'
-      },
-      {
-        'name': 'Kamarudin'
-      },
+    listMap2 = [
+      // multi depth list map
+      {'name': 'Ashraf'},
+      {'name': 'Kamarudin'},
       {
         'name': 'Kamarudin',
-        'map': {
-          'age': 'we'
-        }
+        'map': {'age': 'we'}
       },
     ];
   });
 
   test('It Can Cache Multiple Type', () async {
-    expect(await Cache.write('string', string), string);
-    expect(await Cache.write('map', map), map);
-    expect(await Cache.write('map2', map2), map2);
-    expect(await Cache.write('listString', listString), listString);
-    expect(await Cache.write('listMap', listMap), listMap);
-    expect(await Cache.write('listMap2', listMap2), listMap2);
+    expect(await write('string', string), string);
+    expect(await write('map', map), map);
+    expect(await write('map2', map2), map2);
+    expect(await write('listString', listString), listString);
+    expect(await write('listMap', listMap), listMap);
+    expect(await write('listMap2', listMap2), listMap2);
   });
 
   test('It can load Cached data', () async {
-    await Cache.write('string', string);
-    await Cache.write('map', map);
+    await write('string', string);
+    await write('map', map);
 
-    expect(await Cache.load('string'), string);
-    expect(await Cache.load('map'), map);
+    expect(await load('string'), string);
+    expect(await load('map'), map);
   });
 
   test('It will load if data exist else create new then load', () async {
-    Cache.write('existing', 'ExistingData');
+    write('existing', 'ExistingData');
 
-    expect(await Cache.remember('string', string), string);
-    expect(await Cache.remember('existing', 'NewData'), 'ExistingData');
+    expect(await remember('string', string), string);
+    expect(await remember('existing', 'NewData'), 'ExistingData');
   });
-  
+
   test('It will remove cache data if passed expiry time', () async {
-    Cache.write('willExpire', 'data', 2);
+    write('willExpire', 'data', 2);
 
-    expect(await Cache.load('willExpire'), 'data');
+    expect(await load('willExpire'), 'data');
 
-    await Future.delayed(const Duration(seconds: 3), (){});
+    await Future.delayed(const Duration(seconds: 3), () {});
 
-    expect(await Cache.load('willExpire'), null);
+    expect(await load('willExpire'), null);
   });
 
   test('It can use anonymous function', () async {
-
-    await Cache.remember('key', () {
+    await remember('key', () {
       return 'old';
     }, 5);
 
-    expect(await Cache.remember('key', () {
-      return 'new';
-    }), 'old');
+    expect(
+        await remember('key', () {
+          return 'new';
+        }),
+        'old');
 
-    await Future.delayed(const Duration(seconds: 6), (){});
+    await Future.delayed(const Duration(seconds: 6), () {});
 
-    expect(await Cache.remember('key', () {
-      return 'new';
-    }), 'new');
+    expect(
+        await remember('key', () {
+          return 'new';
+        }),
+        'new');
 
-    expect(await Cache.remember('string', () {
-      return 'test';
-    }), 'test');
+    expect(
+        await remember('string', () {
+          return 'test';
+        }),
+        'test');
 
-    expect(await Cache.remember('string', () => 'test'), 'test');
+    expect(await remember('string', () => 'test'), 'test');
   });
 
   test('It will load first then fetch', () async {
-
-    await Cache.remember('key', () {
+    await remember('key', () {
       return 'old';
     }, 5);
 
-    expect(await Cache.remember('key', () {
-      return 'new';
-    }), 'old');
+    expect(
+        await remember('key', () {
+          return 'new';
+        }),
+        'old');
 
-    await Future.delayed(const Duration(seconds: 6), (){});
+    await Future.delayed(const Duration(seconds: 6), () {});
 
-    expect(await Cache.remember('key', () {
-      return 'new';
-    }), 'new');
+    expect(
+        await remember('key', () {
+          return 'new';
+        }),
+        'new');
   });
 
   test('It will delete all cache trace', () async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    await Cache.write('string', string, 10);
+    await write('string', string, 10);
 
     // get all keys before destroy
     Map keys = jsonDecode(prefs.getString('string'));
-    Cache.destroy('string');
+    destroy('string');
 
     // to make sure it works without await
-    await Future.delayed(const Duration(seconds: 5), (){});
+    await Future.delayed(const Duration(seconds: 5), () {});
 
     expect(prefs.getString('string'), null);
     expect(prefs.getString('string' + 'ExpiredAt'), null);
