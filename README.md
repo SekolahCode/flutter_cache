@@ -68,7 +68,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_cache/flutter_cache.dart';
 
-var test = await Cache.remember('employees', () async {
+var employees = await Cache.remember('employees', () async {
   var response = await http.get('http://dummy.restapiexample.com/api/v1/employees');
   return jsonDecode(response.body)['data'].cast<Map>();
 }, 120); // cache for 2 mins
@@ -76,7 +76,7 @@ var test = await Cache.remember('employees', () async {
 // or 
 
 // cache for 2 mins
-var test = await Cache.remember(
+var employees = await Cache.remember(
     'servers', 
     () async => jsonDecode( 
         (await http.get( 'http://dummy.restapiexample.com/api/v1/employees' )
