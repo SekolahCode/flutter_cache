@@ -65,6 +65,10 @@ void main() {
     expect(await load('map'), map);
   });
 
+  test('It can load Cached default data if not exists', () async {
+    expect(await load('data', 'defaultData'), 'defaultData');
+  });
+
   test('It will load if data exist else create new then load', () async {
     write('existing', 'ExistingData');
 
