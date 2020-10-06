@@ -41,11 +41,11 @@ Future write(String key, var data, [int expiredAfter]) async {
 *
 * @return Cache.content
 */
-Future load(String key, [bool list = false]) async {
+Future load(String key, [var defaultValue = null, bool list = false]) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
   // Guard
-  if (prefs.getString(key) == null) return null;
+  if (prefs.getString(key) == null) return defaultValue;
 
   if (Cache.isExpired(prefs.getInt(key + 'ExpiredAt'))) {
     destroy(key);
