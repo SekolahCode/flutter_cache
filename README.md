@@ -20,6 +20,9 @@ cache.write('key', 'data', 120);
 // load Cache by key
 cache.load('key'); // This will load the cache data.
 
+// return `defaultValue` if key not exists
+cache.load('key', 'defaultValue')
+
 // destroy single cache by key
 cache.destroy('key');
 
