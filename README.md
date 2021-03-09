@@ -38,7 +38,7 @@ First include the package dependency in your project's `pubspec.yaml` file
 
 ```yaml
 dependencies:
-  flutter_cache: ^0.0.6
+  flutter_cache: ^0.0.7
 ```
 
 You can install the package via pub get:
