@@ -24,3 +24,10 @@
 
 * await on anonymous function execute.
 * added ShouldCache type
+
+## [0.0.7] - Fixes and Small Addition.
+
+* Can set optional value if key not exists in `load()`
+* Import package method instead of Cache class
+* Upgrade to dependencies to Flutter 2
+* Update Test from flutter_test to test package
