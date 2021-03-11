@@ -5,12 +5,12 @@ import 'package:flutter_cache/flutter_cache.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  String string;
-  Map map;
-  Map map2;
-  List<String> listString;
-  List<Map> listMap;
-  List<Map> listMap2;
+  late String string;
+  late Map map;
+  late Map map2;
+  late List<String> listString;
+  late List<Map> listMap;
+  late List<Map> listMap2;
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
@@ -139,7 +139,7 @@ void main() {
     await write('string', string, 10);
 
     // get all keys before destroy
-    Map keys = jsonDecode(prefs.getString('string'));
+    Map keys = jsonDecode(prefs.getString('string')!);
     destroy('string');
 
     // to make sure it works without await
