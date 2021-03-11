@@ -10,7 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 * 
 * @return Cache.content
 */
-Future remember(String key, var data, [int expiredAt]) async {
+Future remember(String key, var data, [int? expiredAt]) async {
   if (await load(key) == null) {
     if (data is Function) {
       data = await data();
@@ -27,7 +27,7 @@ Future remember(String key, var data, [int expiredAt]) async {
 *
 * @return Cache.content
 */
-Future write(String key, var data, [int expiredAfter]) async {
+Future write(String key, var data, [int? expiredAfter]) async {
   Cache cache = new Cache(key, data);
   if (expiredAfter != null) cache.setExpiredAfter(expiredAfter);
 
@@ -52,21 +52,21 @@ Future load(String key, [var defaultValue = null, bool list = false]) async {
     return null;
   }
 
-  Map keys = jsonDecode(prefs.getString(key));
+  Map keys = jsonDecode(prefs.getString(key)!);
   Cache cache = new Cache.rebuild(key);
-  String cacheType = prefs.getString(keys['type']);
+  String? cacheType = prefs.getString(keys['type']);
   var cacheContent;
 
   if (cacheType == 'String') cacheContent = prefs.getString(keys['content']);
 
   if (cacheType == 'Map')
-    cacheContent = jsonDecode(prefs.getString(keys['content']));
+    cacheContent = jsonDecode(prefs.getString(keys['content'])!);
 
   if (cacheType == 'List<String>')
     cacheContent = prefs.getStringList(keys['content']);
 
   if (cacheType == 'List<Map>')
-    cacheContent = (prefs.getStringList(keys['content']))
+    cacheContent = prefs.getStringList(keys['content'])!
         .map((i) => jsonDecode(i))
         .toList();
 
@@ -93,7 +93,7 @@ void clear() async {
 */
 void destroy(String key) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  Map keys = jsonDecode(prefs.getString(key));
+  Map keys = jsonDecode(prefs.getString(key)!);
 
   // remove all cache trace
   prefs.remove(key);

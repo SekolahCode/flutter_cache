@@ -1,19 +1,19 @@
 name: flutter_cache
 description: A simple cache package for flutter. This package is a wrapper for shared preference and makes working with shared preference easier.
-version: 0.0.7
+version: 0.1.0
 author: Ashraf Kamarudin
 homepage: https://github.com/SekolahCode/flutter_cache
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  shared_preferences: ^0.5.6
+  shared_preferences: ^2.0.4
 
 dev_dependencies:
-  test: ^1.5.1
+  test: ^1.16.7
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -3,18 +3,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_cache/Parse.dart';
 
 class Cache {
-  String key;
+  late String key;
 
   /* Cache Content*/
-  String contentKey;
+  String? contentKey;
   var content;
 
   /* Cache Content's Type*/
-  String typeKey;
-  String type;
+  String? typeKey;
+  String? type;
 
   /* Cache Expiry*/
-  int expiredAfter;
+  int? expiredAfter;
 
   /*
   * Cache Class Constructors Section
@@ -38,12 +38,12 @@ class Cache {
     this.key = key;
   }
 
-  setContent(var data, [String contentKey]) {
+  setContent(var data, [String? contentKey]) {
     this.content = data;
     this.contentKey = contentKey ?? this.generateCompositeKey('content');
   }
 
-  setType(String type, [String typeKey]) {
+  setType(String? type, [String? typeKey]) {
     this.type = type;
     this.typeKey = typeKey ?? this.generateCompositeKey('type');
   }
@@ -65,15 +65,15 @@ class Cache {
         jsonEncode({'content': cache.contentKey, 'type': cache.typeKey}));
 
     if (cache.content is String)
-      prefs.setString(cache.contentKey, cache.content);
+      prefs.setString(cache.contentKey!, cache.content);
 
     if (cache.content is List)
-      prefs.setStringList(cache.contentKey, cache.content);
+      prefs.setStringList(cache.contentKey!, cache.content);
 
     if (cache.expiredAfter != null)
-      prefs.setInt(key + 'ExpiredAt', cache.expiredAfter);
+      prefs.setInt(key + 'ExpiredAt', cache.expiredAfter!);
 
-    prefs.setString(cache.typeKey, cache.type);
+    prefs.setString(cache.typeKey!, cache.type!);
   }
 
   /*
@@ -91,7 +91,7 @@ class Cache {
     return (ms / 1000).round();
   }
 
-  static bool isExpired(int cacheExpiryInfo) {
+  static bool isExpired(int? cacheExpiryInfo) {
     if (cacheExpiryInfo != null &&
         cacheExpiryInfo < Cache.currentTimeInSeconds()) {
       return true;
